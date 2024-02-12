@@ -1,14 +1,16 @@
 require('dotenv').config()
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
-const DB = require('./../fakeDB.json');
+const defaultDB = require('./../fakeDB.json');
 
 const PORT = process.env.PORT || 3001;
 
-class Server {
+export class Server {
     port: number
-    constructor(port: number) {
+    DB: any
+    constructor(port: number, DB?: any) {
             this.port = port
+            this.DB = DB || defaultDB
     }
 
     start() {
@@ -19,11 +21,11 @@ class Server {
                 // GET all users
                 console.log('/api/users')
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(DB.users));
+                res.end(JSON.stringify(this.DB.users));
             } else if (url.match(/\/api\/users\/\w+/) && method === 'GET') {
                 // GET user by userId
                 const userId = url.split('/')[3];
-                const user = DB.users.find((u: any) => u.id === userId);
+                const user = this.DB.users.find((u: any) => u.id === userId);
                 if (!user) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'User not found' }));
@@ -44,7 +46,7 @@ class Server {
                         res.end(JSON.stringify({ error: 'Name, age, hobbies are required' }));
                     } else {
                         const newUser = { id: uuidv4(), name, age, hobbies };
-                        DB.users.push(newUser);
+                        this.DB.users.push(newUser);
                         res.writeHead(201, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify(newUser));
                     }
@@ -52,7 +54,7 @@ class Server {
             } else if (url.match(/\/api\/users\/\w+/) && method === 'PUT') {
                 // PUT update user by userId
                 const userId = url.split('/')[3];
-                const userIndex = DB.users.findIndex((u: any) => u.id === userId);
+                const userIndex = this.DB.users.findIndex((u: any) => u.id === userId);
                 if (userIndex === -1) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'User not found' }));
@@ -67,21 +69,21 @@ class Server {
                             res.writeHead(400, { 'Content-Type': 'application/json' });
                             res.end(JSON.stringify({ error: 'Name, age, hobbies are required' }));
                         } else {
-                            DB.users[userIndex] = { ...DB.users[userIndex], name, age, hobbies };
+                            this.DB.users[userIndex] = { ...this.DB.users[userIndex], name, age, hobbies };
                             res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify(DB.users[userIndex]));
+                            res.end(JSON.stringify(this.DB.users[userIndex]));
                         }
                     });
                 }
             } else if (url.match(/\/api\/users\/\w+/) && method === 'DELETE') {
                 // DELETE user by userId
                 const userId = url.split('/')[3];
-                const userIndex = DB.users.findIndex((u: any) => u.id === userId);
+                const userIndex = this.DB.users.findIndex((u: any) => u.id === userId);
                 if (userIndex === -1) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'User not found' }));
                 } else {
-                    DB.users.splice(userIndex, 1);
+                    this.DB.users.splice(userIndex, 1);
                     res.writeHead(204);
                     res.end();
                 }
