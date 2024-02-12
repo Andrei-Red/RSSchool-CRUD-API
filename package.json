@@ -4,7 +4,8 @@
   "description": "simple CRUD api vanilla JS",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/bundle.js",
+    "start:dev": "nodemon --exec nodemon --exec \"npm run start\"",
+    "start": "webpack && node ./dist/bundle.js",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,9 +24,15 @@
   },
   "homepage": "https://github.com/Andrei-Red/RSSchool-CRUD-API#readme",
   "devDependencies": {
+    "nodemon": "^3.0.3",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.2",
+    "ts-node": "^10.9.2",
+    "uuid": "^9.0.1"
   }
 }

@@ -1,3 +1,3 @@
-import {server} from "../../SIMPLE_CRUD_API/RSSchool-CRUD-API/src/main.ts";
+import {server} from "./src/main.ts";
 
-server()
+server.start()
